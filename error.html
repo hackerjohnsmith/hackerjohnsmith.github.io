@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>HackerJohnSmith个人网站</title>
+    <!-- 外部资源引入 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#165DFF",
+                        secondary: "#36CFC9",
+                        cyan: "#00FFFF",
+                        neutral: "#F5F7FA",
+                        dark: "#1D2129",
+                    },
+                    fontFamily: {
+                        inter: ["Inter", "system-ui", "sans-serif"],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+        .bg-gradient-primary {
+          background: linear-gradient(
+            135deg,
+            #00ffff 0%,
+            #36cfc9 50%,
+            #165dff 100%
+          );
+        }
+        .text-shadow {
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .card-hover {
+          transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+          background: rgba(29, 33, 41, 0.4);
+        }
+        .rounded-uniform {
+          border-radius: 16px;
+        }
+
+        /* 亚克力效果 */
+        .acrylic {
+          background: rgba(29, 33, 41, 0.35);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .acrylic-highlight {
+          background: rgba(29, 33, 41, 0.5);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 文本样式 */
+        .title-line-height {
+          line-height: 1.2;
+        }
+        .body-line-height {
+          line-height: 1.6;
+        }
+
+        /* 交互样式 */
+        .touch-friendly {
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+        }
+        .no-select {
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+        .allow-select {
+          -webkit-user-select: text;
+          -moz-user-select: text;
+          -ms-user-select: text;
+          user-select: text;
+        }
+
+        /* 技能标签 */
+        .skill-tag {
+          background: rgba(22, 93, 255, 0.15);
+          color: #00ffff;
+          transition: all 0.2s ease;
+        }
+        .skill-tag:hover {
+          background: rgba(22, 93, 255, 0.3);
+          transform: scale(1.05);
+        }
+
+        /* 导航项 */
+        .nav-item {
+          position: relative;
+          transition: all 0.3s ease;
+        }
+        .nav-item::after {
+          content: "";
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: -2px;
+          left: 0;
+          background-color: #00ffff;
+          transition: width 0.3s ease;
+        }
+        .nav-item:hover::after,
+        .nav-item.active::after {
+          width: 100%;
+        }
+
+        /* 统计项 */
+        .stat-item {
+          transition: transform 0.3s ease, background-color 0.3s ease;
+          border-radius: 12px;
+        }
+        .stat-item:hover {
+          transform: scale(1.05);
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+      }
+    </style>
+</head>
+
+<body class="font-inter bg-gradient-primary min-h-screen flex flex-col p-3 sm:p-4 md:p-5 overflow-x-hidden no-select">
+    <!-- 顶部导航栏 -->
+    <header class="w-full max-w-7xl mx-auto mb-4 sm:mb-6">
+        <div class="acrylic rounded-uniform p-3 sm:p-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="text-white font-bold text-lg sm:text-xl mr-8 flex items-center">
+                    <i class="fa fa-home mr-2 text-cyan"></i>
+                    HackerJohnSmith
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="https://hackerjohnsmith.github.io"
+                        class="nav-item text-white/80 hover:text-white text-sm sm:text-base">主页</a>
+                    <a href="https://github.com/hackerjohnsmith?tab=repositories"
+                        class="nav-item text-white/80 hover:text-white text-sm sm:text-base">项目</a>
+                    <a href="error.html" class="nav-item active text-white text-sm sm:text-base">其他</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors">
+                    <i class="fa fa-bell-o"></i>
+                </button>
+                <button
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors">
+                    <i class="fa fa-cog"></i>
+                </button>
+                <div
+                    class="h-8 w-8 rounded-full bg-primary/30 overflow-hidden border-2 border-white/20 ring-2 ring-cyan/20">
+                    <img src="touxiang.jpg" alt="用户头像" class="h-full w-full object-cover" />
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="w-full max-w-7xl mx-auto flex-grow">
+        <div class="acrylic-highlight rounded-uniform p-6 sm:p-8 text-center">
+            <!-- 装饰元素 -->
+            <div class="absolute top-20 left-20 w-40 h-40 bg-cyan/10 rounded-full filter blur-3xl z-0"></div>
+            <div class="absolute bottom-20 right-20 w-40 h-40 bg-primary/10 rounded-full filter blur-3xl z-0"></div>
+
+            <div class="relative z-10">
+                <div
+                    class="inline-flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-white/10 mb-6">
+                    <i class="fa fa-exclamation-triangle text-cyan text-4xl sm:text-5xl"></i>
+                </div>
+
+                <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-4 text-shadow">
+                    出错啦!
+                </h1>
+                <p class="text-white/80 text-lg sm:text-xl mb-2 max-w-md mx-auto">
+                    抱歉，您访问的页面不存在或已被移除
+                </p>
+                <p class="text-white/60 text-sm sm:text-base mb-8 max-w-md mx-auto">
+                    可能是链接错误或页面已更新，请尝试其他页面
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="https://hackerjohnsmith.github.io"
+                        class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary hover:bg-primary/80 text-white transition-colors">
+                        <i class="fa fa-home mr-2"></i>返回主页
+                    </a>
+                    <button onclick="window.history.back()"
+                        class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors">
+                        <i class="fa fa-arrow-left mr-2"></i>返回上页
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="w-full max-w-7xl mx-auto mt-6 mb-3 text-center text-white/80 text-xs sm:text-sm tracking-wide">
+        &copy; 2025 HackerJohnSmith | 版权所有
+    </footer>
+
+    <script>
+        // 安全功能模块
+        const Security = {
+            init() {
+                this.disableRightClick();
+                this.restrictCopy();
+                this.blockHotkeys();
+            },
+
+            // 禁用右键菜单
+            disableRightClick() {
+                document.addEventListener("contextmenu", (e) => e.preventDefault());
+            },
+
+            // 限制复制功能（仅允许输入框内复制）
+            restrictCopy() {
+                document.addEventListener("copy", (e) => {
+                    const active = document.activeElement;
+                    if (
+                        !(active.tagName === "INPUT" || active.tagName === "TEXTAREA")
+                    ) {
+                        e.preventDefault();
+                    }
+                });
+            },
+
+            // 阻止特定快捷键
+            blockHotkeys() {
+                document.addEventListener("keydown", (e) => {
+                    // 允许F5刷新和F11全屏
+                    if (e.key === "F5" || e.key === "F11") return;
+
+                    // 禁用F1-F4, F6-F10, F12
+                    if (
+                        (e.key >= "F1" && e.key <= "F4") ||
+                        (e.key >= "F6" && e.key <= "F10") ||
+                        e.key === "F12"
+                    ) {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // 禁用开发者工具快捷键
+                    if (
+                        e.ctrlKey &&
+                        e.shiftKey &&
+                        ["I", "i", "J", "j"].includes(e.key)
+                    ) {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // 禁用查看源代码
+                    if (e.ctrlKey && ["U", "u"].includes(e.key)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            },
+        };
+
+        // 页面初始化
+        document.addEventListener("DOMContentLoaded", () => {
+            console.clear();
+            console.log("HackerJohnSmith个人网站 - 错误页面");
+
+            Security.init();
+        });
+    </script>
+</body>
+
+</html>

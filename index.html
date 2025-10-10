@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HackerJohnSmith个人网站</title>
+    <!-- 外部资源引入 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        cyan: '#00FFFF',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .bg-gradient-primary { background: linear-gradient(135deg, #00FFFF 0%, #36CFC9 50%, #165DFF 100%); }
+            .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+            .card-hover { 
+                transition: all 0.3s ease; 
+            }
+            .card-hover:hover { 
+                transform: translateY(-4px); 
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+                background: rgba(29, 33, 41, 0.4);
+            }
+            .rounded-uniform { border-radius: 16px; }
+            
+            /* 亚克力效果 */
+            .acrylic { 
+                background: rgba(29, 33, 41, 0.35);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            
+            .acrylic-highlight { 
+                background: rgba(29, 33, 41, 0.5);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+            }
+            
+            /* 文本样式 */
+            .title-line-height { line-height: 1.2; }
+            .body-line-height { line-height: 1.6; }
+            
+            /* 交互样式 */
+            .touch-friendly { min-height: 44px; display: flex; align-items: center; }
+            .no-select { 
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            .allow-select { 
+                -webkit-user-select: text;
+                -moz-user-select: text;
+                -ms-user-select: text;
+                user-select: text;
+            }
+            
+            /* 技能标签 */
+            .skill-tag {
+                background: rgba(22, 93, 255, 0.15);
+                color: #00FFFF;
+                transition: all 0.2s ease;
+            }
+            .skill-tag:hover {
+                background: rgba(22, 93, 255, 0.3);
+                transform: scale(1.05);
+            }
+            
+            /* 导航项 */
+            .nav-item {
+                position: relative;
+                transition: all 0.3s ease;
+            }
+            .nav-item::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -2px;
+                left: 0;
+                background-color: #00FFFF;
+                transition: width 0.3s ease;
+            }
+            .nav-item:hover::after, .nav-item.active::after {
+                width: 100%;
+            }
+            
+            /* 统计项 */
+            .stat-item {
+                transition: transform 0.3s ease, background-color 0.3s ease;
+                border-radius: 12px;
+            }
+            .stat-item:hover {
+                transform: scale(1.05);
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-gradient-primary min-h-screen flex flex-col p-3 sm:p-4 md:p-5 overflow-x-hidden no-select">
+    <!-- 顶部导航栏 -->
+    <header class="w-full max-w-7xl mx-auto mb-4 sm:mb-6">
+        <div class="acrylic rounded-uniform p-3 sm:p-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="text-white font-bold text-lg sm:text-xl mr-8 flex items-center">
+                    <i class="fa fa-home mr-2 text-cyan"></i>
+                    HackerJohnSmith
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="https://hackerjohnsmith.github.io"
+                        class="nav-item active text-white text-sm sm:text-base">主页</a>
+                    <a href="https://github.com/hackerjohnsmith?tab=repositories"
+                        class="nav-item text-white/80 hover:text-white text-sm sm:text-base">项目</a>
+                    <a href="error.html" class="nav-item text-white/80 hover:text-white text-sm sm:text-base">其他</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors">
+                    <i class="fa fa-bell-o"></i>
+                </button>
+                <button
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors">
+                    <i class="fa fa-cog"></i>
+                </button>
+                <div
+                    class="h-8 w-8 rounded-full bg-primary/30 overflow-hidden border-2 border-white/20 ring-2 ring-cyan/20">
+                    <img src="touxiang.jpg" alt="用户头像" class="h-full w-full object-cover">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="w-full max-w-7xl mx-auto flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- 左侧：个人信息 -->
+            <div class="lg:col-span-1 space-y-4 sm:space-y-6">
+                <!-- 个人资料卡片 -->
+                <div class="acrylic-highlight rounded-uniform p-4 sm:p-5 overflow-hidden relative">
+                    <!-- 装饰元素 -->
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-cyan/10 rounded-full filter blur-3xl -mr-16 -mt-16 z-0">
+                    </div>
+                    <div
+                        class="absolute bottom-0 left-0 w-24 h-24 bg-primary/10 rounded-full filter blur-2xl -ml-12 -mb-12 z-0">
+                    </div>
+
+                    <div class="relative z-10">
+                        <!-- 头像和名称 -->
+                        <div class="flex flex-col items-center text-center mb-4">
+                            <div
+                                class="h-24 w-24 sm:h-32 sm:w-32 rounded-full bg-primary/20 overflow-hidden border-4 border-white/20 mb-3 ring-4 ring-cyan/10">
+                                <img src="touxiang.jpg" alt="个人头像" class="h-full w-full object-cover">
+                            </div>
+                            <h1 class="text-[clamp(1.2rem,3vw,1.6rem)] font-bold text-white mb-1 text-shadow">johnsmith
+                            </h1>
+                            <p class="text-cyan text-sm sm:text-base mb-2 flex items-center">
+                                <i class="fa fa-bolt mr-1"></i>网络安全工程师
+                            </p>
+                            <p class="text-white/80 text-xs sm:text-sm max-w-xs">死亡促进人类思考</p>
+                        </div>
+
+                        <!-- 统计数据 -->
+                        <div class="grid grid-cols-3 gap-2 text-center mt-5">
+                            <div class="p-2 stat-item">
+                                <div class="text-white font-bold text-lg sm:text-xl">6.7K</div>
+                                <div class="text-white/70 text-xs sm:text-sm">分享触达</div>
+                            </div>
+                            <div class="p-2 stat-item">
+                                <div class="text-white font-bold text-lg sm:text-xl">30+</div>
+                                <div class="text-white/70 text-xs sm:text-sm">技术探索</div>
+                            </div>
+                            <div class="p-2 stat-item">
+                                <div class="text-white font-bold text-lg sm:text-xl">7年</div>
+                                <div class="text-white/70 text-xs sm:text-sm">成长探索</div>
+                            </div>
+                        </div>
+
+                        <!-- 社交链接 -->
+                        <div class="flex justify-center space-x-4 mt-4">
+                            <a href="https://hackerjohnsmith.github.io"
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                <i class="fa fa-globe"></i>
+                            </a>
+                            <a href="https://www.github.com/hackerjohnsmith"
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                <i class="fa fa-github"></i>
+                            </a>
+                            <a href="https://www.ollama.com/hackerjohnsmith"
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                <i class="fa fa-comment"></i>
+                            </a>
+                            <a href="https://space.bilibili.com/398475067"
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                <i class="fa fa-play-circle"></i>
+                            </a>
+                            <a href="https://x.com/hkjohnsmith"
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 技能标签 -->
+                <div class="acrylic rounded-uniform p-4 sm:p-5 card-hover">
+                    <h3 class="text-white font-semibold mb-3 text-sm sm:text-base flex items-center">
+                        <i class="fa fa-wrench mr-2 text-cyan"></i>相关技能
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">网络空间安全</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">网络技术</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">计算机科学与技术</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">运维管理</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">计算机编程与开发</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">人工智能</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">操作系统内核开发</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">游戏开发</span>
+                        <span class="skill-tag px-2.5 py-1 rounded-full text-xs sm:text-sm">数字媒体</span>
+                    </div>
+                </div>
+
+                <!-- 联系信息 -->
+                <div class="acrylic rounded-uniform p-4 sm:p-5 card-hover">
+                    <h3 class="text-white font-semibold mb-3 text-sm sm:text-base flex items-center">
+                        <i class="fa fa-info-circle mr-2 text-cyan"></i>联系我
+                    </h3>
+                    <div class="space-y-2.5">
+                        <div class="flex items-center p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cyan mr-3">
+                                <i class="fa fa-map-marker"></i>
+                            </div>
+                            <span class="text-white/80 text-xs sm:text-sm">中国 上海</span>
+                        </div>
+                        <div class="flex items-center p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cyan mr-3">
+                                <i class="fa fa-twitter"></i>
+                            </div>
+                            <span class="text-white/80 text-xs sm:text-sm"><a href="https://x.com/messages"
+                                    rel="noopener noreferrer">Twitter 私信</a></span>
+                        </div>
+                        <div class="flex items-center p-1.5 rounded-lg hover:bg-white/5 transition-colors">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cyan mr-3">
+                                <i class="fa fa-play-circle"></i>
+                            </div>
+                            <span class="text-white/80 text-xs sm:text-sm"><a
+                                    href="https://message.bilibili.com/?spm_id_from=333.1387.0.0#/whisper/mid398475067"
+                                    rel="noopener noreferrer">BiliBili 私信</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：内容区域 -->
+            <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+                <!-- 个人简介 -->
+                <div class="acrylic rounded-uniform p-4 sm:p-5 card-hover">
+                    <h2 class="text-white font-bold text-lg sm:text-xl mb-3 flex items-center">
+                        <i class="fa fa-user-circle mr-2 text-cyan"></i>关于我
+                    </h2>
+                    <p class="text-white/80 text-sm sm:text-base mb-3 body-line-height">
+                        我是HackerJohnSmith, 就读与计算机网络技术专业, 主攻方向是计算机网络空间安全。现自由职业, 拥有多领域项目实操经验, 曾参与上海市护网行动和多个大型项目。​
+                    </p>
+                    <p class="text-white/80 text-sm sm:text-base mb-3 body-line-height">
+                        我热衷探索各类计算机前沿技术，聚焦用户体验优化与性能提升。活跃于开源社区，维护多个 GitHub 项目，持续分享技术经验与行业见解。​​
+                    </p>
+                    <p class="text-white/80 text-sm sm:text-base body-line-height">
+                        闲暇沉浸于多种爱好, 可以来找我聊聊哦。坚信多元化爱好能拓宽思考维度，为产品创作注入更鲜活的体验视角。
+                    </p>
+                </div>
+
+                <!-- 项目展示 -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-white font-bold text-lg sm:text-xl text-shadow flex items-center">
+                            <i class="fa fa-folder-open mr-2 text-cyan"></i>我的项目
+                        </h2>
+                        <a href="https://github.com/hackerjohnsmith?tab=repositories"
+                            class="text-cyan text-xs sm:text-sm hover:underline flex items-center">
+                            查看全部 <i class="fa fa-arrow-right ml-1 text-xs"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <!-- 项目卡片1 -->
+                        <a href="https://github.com/hackerjohnsmith/HackerEasyWeb" rel="noopener noreferrer">
+                            <div class="acrylic rounded-uniform p-3 sm:p-4 card-hover">
+                                <div class="flex items-start">
+                                    <div
+                                        class="w-10 h-10 sm:w-12 sm:h-12 rounded bg-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fa fa-shopping-cart text-cyan"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-white font-semibold text-sm sm:text-base mb-1">HackerEasyWeb
+                                        </h3>
+                                        <p class="text-white/70 text-xs sm:text-sm mb-2 line-clamp-2">
+                                            一个新手即开即用 Web 服务端：任何人可极简部署含登录注册的 HTTPS 动态服务端工具</p>
+                                        <div class="flex items-center text-white/60 text-xs">
+                                            <span class="mr-3"><i class="fa fa-calendar-o mr-1"></i> 2025-10</span>
+                                            <span><i class="fa fa-code-fork mr-1"></i> Github</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 项目卡片2 -->
+                        <a href="https://www.ollama.com/hackerjohnsmith/HackerAI-PC" rel="noopener noreferrer">
+                            <div class="acrylic rounded-uniform p-3 sm:p-4 card-hover">
+                                <div class="flex items-start">
+                                    <div
+                                        class="w-10 h-10 sm:w-12 sm:h-12 rounded bg-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="fa fa-dashboard text-cyan"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-white font-semibold text-sm sm:text-base mb-1">HackerAI-PC</h3>
+                                        <p class="text-white/70 text-xs sm:text-sm mb-2 line-clamp-2">
+                                            HackerAI 模型家族成员, 针对个人PC优化的科技与计算机辅助AI模型, 旨在为PC端带来优质使用体验</p>
+                                        <div class="flex items-center text-white/60 text-xs">
+                                            <span class="mr-3"><i class="fa fa-calendar-o mr-1"></i> 2025-08</span>
+                                            <span><i class="fa fa-code-fork mr-1"></i> Ollama</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 项目卡片3 -->
+                        <div class="acrylic rounded-uniform p-3 sm:p-4 card-hover">
+                            <div class="flex items-start">
+                                <div
+                                    class="w-10 h-10 sm:w-12 sm:h-12 rounded bg-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fa fa-mobile text-cyan text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-semibold text-sm sm:text-base mb-1">HackerScan</h3>
+                                    <p class="text-white/70 text-xs sm:text-sm mb-2 line-clamp-2">
+                                        一个简单好用的IP端口扫描器</p>
+                                    <div class="flex items-center text-white/60 text-xs">
+                                        <span class="mr-3"><i class="fa fa-calendar-o mr-1"></i> 项目已立项</span>
+                                        <span><i class="fa fa-code-fork mr-1"></i> 内部调试阶段</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 项目卡片4 -->
+                        <div class="acrylic rounded-uniform p-3 sm:p-4 card-hover">
+                            <div class="flex items-start">
+                                <div
+                                    class="w-10 h-10 sm:w-12 sm:h-12 rounded bg-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+                                    <i class="fa fa-users text-cyan"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-semibold text-sm sm:text-base mb-1">HackerExtremeWeb</h3>
+                                    <p class="text-white/70 text-xs sm:text-sm mb-2 line-clamp-2">
+                                        一个面向个人/企业的全套Web主页解决方案</p>
+                                    <div class="flex items-center text-white/60 text-xs">
+                                        <span class="mr-3"><i class="fa fa-calendar-o mr-1"></i> 项目已立项</span>
+                                        <span><i class="fa fa-code-fork mr-1"></i> 内部开发阶段</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 活动统计和动态 -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- 活动统计 -->
+                    <div class="lg:col-span-1 acrylic rounded-uniform p-4 sm:p-5 card-hover">
+                        <h3 class="text-white font-semibold mb-4 text-sm sm:text-base flex items-center">
+                            <i class="fa fa-line-chart mr-2 text-cyan"></i>活跃度统计
+                        </h3>
+                        <div class="h-48 sm:h-56">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 最近动态 -->
+                    <div class="lg:col-span-2 acrylic rounded-uniform p-4 sm:p-5 card-hover">
+                        <h3 class="text-white font-semibold mb-4 text-sm sm:text-base flex items-center">
+                            <i class="fa fa-clock-o mr-2 text-cyan"></i>Ta的最近动态
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex p-2 rounded-lg hover:bg-white/5 transition-colors">
+                                <div
+                                    class="w-8 h-8 rounded-full overflow-hidden mr-3 flex-shrink-0 ring-2 ring-cyan/20">
+                                    <img src="touxiang.jpg" alt="用户头像" class="h-full w-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="text-white/80 text-sm sm:text-base"><span
+                                            class="font-medium text-white">上线项目</span> 个人网站</p>
+                                    <p class="text-white/60 text-xs mt-1">2025/10/10</p>
+                                </div>
+                            </div>
+                            <div class="flex p-2 rounded-lg hover:bg-white/5 transition-colors">
+                                <div
+                                    class="w-8 h-8 rounded-full overflow-hidden mr-3 flex-shrink-0 ring-2 ring-cyan/20">
+                                    <img src="touxiang.jpg" alt="用户头像" class="h-full w-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="text-white/80 text-sm sm:text-base"><span
+                                            class="font-medium text-white">更新项目</span> HackerAI-PC</p>
+                                    <p class="text-white/60 text-xs mt-1">2025/10/06</p>
+                                </div>
+                            </div>
+                            <div class="flex p-2 rounded-lg hover:bg-white/5 transition-colors">
+                                <div
+                                    class="w-8 h-8 rounded-full overflow-hidden mr-3 flex-shrink-0 ring-2 ring-cyan/20">
+                                    <img src="touxiang.jpg" alt="用户头像" class="h-full w-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="text-white/80 text-sm sm:text-base"><span
+                                            class="font-medium text-white">上线项目</span> HackerEasyWeb</p>
+                                    <p class="text-white/60 text-xs mt-1">2025/10/02</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="error.html"
+                            class="text-cyan text-xs sm:text-sm mt-3 block text-center hover:underline">其他</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="w-full max-w-7xl mx-auto mt-6 mb-3 text-center text-white/80 text-xs sm:text-sm tracking-wide">
+        &copy; 2025 HackerJohnSmith | 版权所有
+    </footer>
+
+    <script>
+        // 安全功能模块
+        const Security = {
+            init() {
+                this.disableRightClick();
+                this.restrictCopy();
+                this.blockHotkeys();
+            },
+
+            // 禁用右键菜单
+            disableRightClick() {
+                document.addEventListener('contextmenu', e => e.preventDefault());
+            },
+
+            // 限制复制功能（仅允许输入框内复制）
+            restrictCopy() {
+                document.addEventListener('copy', e => {
+                    const active = document.activeElement;
+                    if (!(active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+                        e.preventDefault();
+                    }
+                });
+            },
+
+            // 阻止特定快捷键
+            blockHotkeys() {
+                document.addEventListener('keydown', e => {
+                    // 允许F5刷新和F11全屏
+                    if (e.key === 'F5' || e.key === 'F11') return;
+
+                    // 禁用F1-F4, F6-F10, F12
+                    if ((e.key >= 'F1' && e.key <= 'F4') || (e.key >= 'F6' && e.key <= 'F10') || e.key === 'F12') {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // 禁用开发者工具快捷键
+                    if (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j'].includes(e.key)) {
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // 禁用查看源代码
+                    if (e.ctrlKey && ['U', 'u'].includes(e.key)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
+        };
+
+        // 初始化活跃度图表
+        const initActivityChart = () => {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '3月', '5月', '7月', '9月', '11月'],
+                    datasets: [{
+                        label: '活跃度',
+                        data: [13, 14, 16, 12, 15, 11],
+                        borderColor: '#00FFFF',
+                        backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#00FFFF',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        };
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.clear();
+            console.log("HackerJohnSmith个人网站");
+
+            Security.init();
+            initActivityChart();
+        });
+    </script>
+</body>
+
+</html>
